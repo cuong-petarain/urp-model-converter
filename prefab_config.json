@@ -1,7 +1,0 @@
-{
-  "prefabs": [
-    { "key": "Assets/Furniture_Cute/Prefabs/Chair/Armchair_04.prefab", "position": [0, 0, 0] },
-    { "key": "Assets/Furniture_Cute/Prefabs/Chair/Armchair_05.prefab", "position": [3, 0, -2] },
-    { "key": "Assets/Furniture_Cute/Prefabs/Chair/Armchair_06.prefab", "position": [-4, 0, 2] }
-  ]
-}
