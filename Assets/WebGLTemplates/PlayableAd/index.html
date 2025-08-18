@@ -1,0 +1,220 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Playable Ad - Unity WebGL Single File</title>
+  <style>
+    html,body{height:100%;margin:0;background:#0b0b0b;color:#fff;font-family:Arial,Helvetica,sans-serif}
+    #container{position:relative;width:100%;height:100%;overflow:hidden}
+    #unity-canvas{width:100%;height:100%;display:block;background:#000}
+    #loading{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
+    .progress{width:80%;height:10px;background:rgba(255,255,255,0.1);border-radius:5px;overflow:hidden;margin-top:12px}
+    .progress > div{height:100%;width:0%;background:linear-gradient(90deg,#1db954,#12a3e6)}
+    #cta{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;background:#ff3b30;color:white;padding:12px 22px;border-radius:24px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.3)}
+    #skip{position:absolute;right:12px;top:12px;background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:6px;color:#fff;cursor:pointer}
+    #legal{position:absolute;left:8px;bottom:8px;font-size:11px;color:rgba(255,255,255,0.6)}
+  </style>
+</head>
+<body>
+  <div id="container">
+    <canvas id="unity-canvas"></canvas>
+
+    <div id="loading">
+      <div id="loadingTitle">Loading...</div>
+      <div class="progress"><div id="progressBar"></div></div>
+    </div>
+
+    <div id="skip">Skip</div>
+    <div id="cta">Play Now</div>
+    <div id="legal">Playable demo — tap to play the full experience</div>
+  </div>
+
+  <script>
+    // ------------------------------
+    // PLACEHOLDERS (Replace these server-side or with the node script below)
+    // ------------------------------
+    const BUILD_JS_BASE64 = '%%BUILD_JS_BASE64%%';
+    const BUILD_DATA_BASE64 = '%%BUILD_DATA_BASE64%%';
+    const BUILD_WASM_BASE64 = '%%BUILD_WASM_BASE64%%';
+
+    // Deep link / store url for CTA
+    const STORE_URL = '%%STORE_URL%%'; // Replace with your store link
+
+    // ------------------------------
+    // Utility: convert base64 string -> Blob URL
+    // ------------------------------
+    function base64ToBlobUrl(base64, mime) {
+      const sliceSize = 1024;
+      const byteChars = atob(base64);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteChars.length; offset += sliceSize) {
+        const slice = byteChars.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) byteNumbers[i] = slice.charCodeAt(i);
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, {type: mime});
+      return URL.createObjectURL(blob);
+    }
+
+    // ------------------------------
+    // Create temporary files (Blob URLs) that Unity loader can fetch
+    // ------------------------------
+    const loaderJsUrl = BUILD_JS_BASE64 ? base64ToBlobUrl(BUILD_JS_BASE64, 'application/javascript') : null;
+    const dataUrl = BUILD_DATA_BASE64 ? base64ToBlobUrl(BUILD_DATA_BASE64, 'application/octet-stream') : null;
+    const wasmUrl = BUILD_WASM_BASE64 ? base64ToBlobUrl(BUILD_WASM_BASE64, 'application/wasm') : null;
+
+    // ------------------------------
+    // Insert a script tag for the Unity loader JS (framework)
+    // ------------------------------
+    function insertLoaderScript(url) {
+      return new Promise((resolve, reject) => {
+        if (!url) return reject('No loader JS URL');
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = () => resolve();
+        script.onerror = (e) => reject(e);
+        document.body.appendChild(script);
+      });
+    }
+
+    // ------------------------------
+    // Hook Unity's build config to use our blob URLs for .data and .wasm
+    // This depends on the Unity loader expecting certain filenames or fetch calls.
+    // The loader typically requests 'Build/<name>.data' and '<name>.wasm'.
+    // We intercept fetch to rewrite those requests to blob URLs.
+    // ------------------------------
+    const originalFetch = window.fetch;
+    window.fetch = function(resource, init) {
+      try {
+        const url = typeof resource === 'string' ? resource : resource.url;
+        // Replace requests ending with .data or .wasm
+        if (url && url.endsWith('.data') && dataUrl) {
+          return originalFetch(dataUrl, init);
+        }
+        if (url && url.endsWith('.wasm') && wasmUrl) {
+          return originalFetch(wasmUrl, init);
+        }
+      } catch (e) {
+        console.warn('fetch intercept error', e);
+      }
+      return originalFetch(resource, init);
+    };
+
+    // Some older Unity loaders use XMLHttpRequest. Patch that too.
+    (function() {
+      const origOpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        try {
+          if (url && url.endsWith('.data') && dataUrl) {
+            arguments[1] = dataUrl;
+          }
+          if (url && url.endsWith('.wasm') && wasmUrl) {
+            arguments[1] = wasmUrl;
+          }
+        } catch (e) {}
+        return origOpen.apply(this, arguments);
+      };
+    })();
+
+    // ------------------------------
+    // Load Unity loader and initialize
+    // ------------------------------
+    async function initUnity() {
+      if (!loaderJsUrl) {
+        document.getElementById('loadingTitle').innerText = 'Build not inlined. Insert base64 placeholders.';
+        return;
+      }
+
+      try {
+        await insertLoaderScript(loaderJsUrl);
+      } catch (e) {
+        console.error('Failed to load Unity loader', e);
+        document.getElementById('loadingTitle').innerText = 'Failed to load loader.';
+        return;
+      }
+
+      // Unity loader will typically expose 'createUnityInstance' global
+      if (typeof createUnityInstance !== 'function') {
+        document.getElementById('loadingTitle').innerText = 'Unity loader missing createUnityInstance.';
+        return;
+      }
+
+      const canvas = document.getElementById('unity-canvas');
+      const loadingTitle = document.getElementById('loadingTitle');
+      const progressBar = document.getElementById('progressBar');
+
+      // Minimal Unity config: adjust Module or config name depending on your loader
+      const config = {
+        dataUrl: 'Build/Build.data', // the loader will request this; our fetch patch rewrites it
+        frameworkUrl: 'Build/Build.framework.js',
+        codeUrl: 'Build/Build.wasm',
+        streamingAssetsUrl: 'StreamingAssets',
+        companyName: 'YourCompany',
+        productName: 'PlayableAdDemo',
+        productVersion: '1.0',
+      };
+
+      // createUnityInstance handles the rest (progress callback provided)
+      createUnityInstance(canvas, config, function(progress) {
+        progressBar.style.width = Math.round(progress * 100) + '%';
+      }).then(function(unityInstance) {
+        // Ready
+        document.getElementById('loading').style.display = 'none';
+        // Optionally expose to window for debugging
+        window.unityInstance = unityInstance;
+
+        // Auto-start logic: wait for first user interaction to unmute / focus on mobile
+        document.getElementById('cta').addEventListener('click', function() {
+          // Example: invoke a Unity function to start the ad's gameplay
+          try { unityInstance.SendMessage('GameManager', 'OnAdStart'); } catch (e) {}
+          openStoreOnFinish(); // or keep CTA to open store later
+        });
+
+      }).catch(function(message) {
+        console.error(message);
+        document.getElementById('loadingTitle').innerText = 'Failed to initialize Unity.';
+      });
+    }
+
+    // ------------------------------
+    // CTA behavior and store redirect
+    // ------------------------------
+    function openStore() {
+      // For safe behavior on mobile ad networks, use window.open in user gesture handlers
+      if (!STORE_URL || STORE_URL === '%%STORE_URL%%') {
+        console.warn('Replace %%STORE_URL%% with your real store URL');
+        return;
+      }
+      window.open(STORE_URL, '_blank');
+    }
+
+    // Option to open store immediately or after sending analytics
+    function openStoreOnFinish() { openStore(); }
+
+    // Wire CTA and skip
+    document.getElementById('cta').addEventListener('click', openStore);
+    document.getElementById('skip').addEventListener('click', function(){
+      // Optionally stop the ad and show CTA or fallback
+      if (window.unityInstance) {
+        try { window.unityInstance.Quit(); } catch (e) {}
+      }
+      openStore();
+    });
+
+    // Pause Unity when tab not visible to reduce CPU and battery
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        try { window.unityInstance && window.unityInstance.SendMessage('GameManager', 'OnAdPause'); } catch (e) {}
+      } else {
+        try { window.unityInstance && window.unityInstance.SendMessage('GameManager', 'OnAdResume'); } catch (e) {}
+      }
+    });
+
+    // Start initialization
+    initUnity();
+
+  </script>
+</body>
+</html>
