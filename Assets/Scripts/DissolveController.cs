@@ -28,6 +28,7 @@ public class DissolveController : MonoBehaviour
     
     void Start()
     {
+        // branch two - 1
         objectRenderer = GetComponent<Renderer>();
         
         // Create an instance of the material to avoid affecting other objects

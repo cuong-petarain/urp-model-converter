@@ -10,6 +10,7 @@ public class MultiplePrefabLoader : MonoBehaviour
     void Start()
     {
         Addressables.LoadAssetsAsync<GameObject>(label, OnPrefabLoaded);
+        // what
     }
 
     void OnPrefabLoaded(GameObject prefab)
