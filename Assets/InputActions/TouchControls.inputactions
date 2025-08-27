@@ -1,0 +1,54 @@
+{
+    "name": "TouchControls",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "291b034e-ac20-4255-bbda-baf7e0434e45",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "63ba2c8b-f4b1-4204-87fd-83fa96fc5f99",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "aff0c1b1-a89d-4842-9bcc-21ac9a9416e0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1276c7d1-b3f5-4db1-a1b2-6b5f822d02f1",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eed87e63-2b53-412d-b0ad-363ee52e7abe",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "MultiTap",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
