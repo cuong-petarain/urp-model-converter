@@ -165,3 +165,5 @@ MonoBehaviour:
     m_Bits: 64
   _type: 1
   _yPositionToDisable: -12
+  _onFishHit: {fileID: 11400000, guid: 19827cca4b336ee459cabbb66fa7475d, type: 2}
+  _onStoneHit: {fileID: 11400000, guid: 4e5e8d6190963584e94b65bbd65e1825, type: 2}

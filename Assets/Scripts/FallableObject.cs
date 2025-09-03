@@ -4,44 +4,43 @@ using UnityEngine;
 
 public class FallableObject : MonoBehaviour
 {
-    public enum ObjectType
+    public enum Type
     {
         Fish, Stone
     }
 
+    [Tooltip("Info")]
     [SerializeField] private LayerMask _penguinMask;
-    [SerializeField] private ObjectType _type;
+    [SerializeField] private Type _type;
     [SerializeField] private float _yPositionToDisable;
+
+    [Tooltip("Events")]
+    [SerializeField] private VoidEventHandlerSO _onFishHit;
+    [SerializeField] private VoidEventHandlerSO _onStoneHit;
 
     private ObjectPool<FallableObject> _pool;
 
     public void Initialize(ObjectPool<FallableObject> pool)
     {
         _pool = pool;
+        gameObject.SetActive(true);
     }
 
     private void Update()
     {
         if (transform.position.y <= _yPositionToDisable)
         {
-            if (_pool != null)
-            {
-                _pool.Return(this);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            HandleDisable();
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (_type == ObjectType.Fish)
+        if (_type == Type.Fish)
         {
             HandleFishBehavior(collision);
         }
-        else if (_type == ObjectType.Stone)
+        else if (_type == Type.Stone)
         {
             HandleStoneBehavior(collision);
         }
@@ -51,7 +50,8 @@ public class FallableObject : MonoBehaviour
     {
         if (collision.gameObject.layer == _penguinMask)
         {
-        
+            _onFishHit.RaiseEvent();
+            HandleDisable();
         }
     }
 
@@ -59,7 +59,21 @@ public class FallableObject : MonoBehaviour
     {
         if (collision.gameObject.layer == _penguinMask)
         {
+            _onStoneHit.RaiseEvent();
+            HandleDisable();
+        }
+    }
 
+    private void HandleDisable()
+    {
+        if (_pool != null)
+        {
+            gameObject.SetActive(false);
+            _pool.Return(this);
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 }

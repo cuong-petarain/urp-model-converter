@@ -14,7 +14,72 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weightEntries:
   - Time: 0
-    SmallFish: 0
-    Fish: 0
-    BigFish: 0
-    HugeFish: 0
+    SmallFish: 60
+    Fish: 25
+    BigFish: 11
+    HugeFish: 4
+  - Time: 30
+    SmallFish: 57
+    Fish: 27
+    BigFish: 12
+    HugeFish: 4
+  - Time: 60
+    SmallFish: 55
+    Fish: 28
+    BigFish: 12
+    HugeFish: 5
+  - Time: 90
+    SmallFish: 52
+    Fish: 28
+    BigFish: 13
+    HugeFish: 7
+  - Time: 120
+    SmallFish: 50
+    Fish: 28
+    BigFish: 14
+    HugeFish: 8
+  - Time: 150
+    SmallFish: 45
+    Fish: 30
+    BigFish: 16
+    HugeFish: 9
+  - Time: 180
+    SmallFish: 43
+    Fish: 28
+    BigFish: 18
+    HugeFish: 11
+  - Time: 240
+    SmallFish: 40
+    Fish: 27
+    BigFish: 20
+    HugeFish: 13
+  - Time: 300
+    SmallFish: 35
+    Fish: 27
+    BigFish: 23
+    HugeFish: 15
+  - Time: 360
+    SmallFish: 32
+    Fish: 25
+    BigFish: 26
+    HugeFish: 17
+  - Time: 420
+    SmallFish: 30
+    Fish: 23
+    BigFish: 28
+    HugeFish: 19
+  - Time: 510
+    SmallFish: 25
+    Fish: 22
+    BigFish: 30
+    HugeFish: 23
+  - Time: 600
+    SmallFish: 20
+    Fish: 22
+    BigFish: 32
+    HugeFish: 26
+  - Time: 720
+    SmallFish: 15
+    Fish: 20
+    BigFish: 35
+    HugeFish: 30

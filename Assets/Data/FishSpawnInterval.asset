@@ -12,4 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e4317c3b3299b4383c944ef8a769ab, type: 3}
   m_Name: FishSpawnInterval
   m_EditorClassIdentifier: 
-  Interval: 0
+  spawnIntervals:
+  - Time: 0
+    Interval: 2
+  - Time: 30
+    Interval: 1.9
+  - Time: 60
+    Interval: 1.8
+  - Time: 90
+    Interval: 1.7
+  - Time: 120
+    Interval: 1.5
+  - Time: 150
+    Interval: 1.4
+  - Time: 180
+    Interval: 1.3
+  - Time: 210
+    Interval: 1.2
+  - Time: 240
+    Interval: 1.1
+  - Time: 270
+    Interval: 1
+  - Time: 300
+    Interval: 0.8
+  - Time: 330
+    Interval: 0.7
+  - Time: 360
+    Interval: 0.6
+  - Time: 390
+    Interval: 0.5

@@ -588,7 +588,7 @@ GameObject:
   m_Layer: 0
   m_Name: ObjectSpawner
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -614,6 +614,12 @@ MonoBehaviour:
   - {fileID: 1670996840552635209, guid: b268f53e7f199d348a5d8cb0ddcb35ed, type: 3}
   - {fileID: 5240222834991731678, guid: 13622ea04ee2920448e606e2156676b5, type: 3}
   - {fileID: 3721745366976465709, guid: 7c74ffd874e7df34e8d635084b41d91d, type: 3}
+  _spawnWidthRange: 4.5
+  _spawnHeight: 13.6
+  _fishDropTable: {fileID: 11400000, guid: c5bec50a795ca7d43bbdde12088177c8, type: 2}
+  _fishSpawnInterval: {fileID: 11400000, guid: 4ff3c5240cb420a4fb2e5d3d79e9b8a0, type: 2}
+  _stoneSpawnInterval: {fileID: 11400000, guid: 234216e6749c7834d8865f3717d69ac1,
+    type: 2}
   _onGameStarted: {fileID: 11400000, guid: 16b9632374c1461438d6faf0e384e3e5, type: 2}
 --- !u!4 &958607264
 Transform:
@@ -817,7 +823,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1665740424}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 332149700}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: OnButtonPlayClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1665740421}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1665740424
 MonoBehaviour:
   m_ObjectHideFlags: 0

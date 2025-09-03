@@ -19,9 +19,6 @@ public class FishDropTableEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        // Update the serializedObject to reflect the latest state of the object.
-        serializedObject.Update();
-
         // --- TABLE HEADER ---
         EditorGUILayout.LabelField("Fish Weight Over Time", EditorStyles.boldLabel);
         EditorGUILayout.BeginHorizontal();
